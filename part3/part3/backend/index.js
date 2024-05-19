@@ -2,12 +2,15 @@ const express = require('express')
 const app = express()
 var morgan = require('morgan')
 
+const cors = require('cors')
+app.use(cors())
+app.use(express.json())
+app.use(express.static('build'))
 
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
-
 
 app.use(morgan(function (tokens, req, res) {
   return [
@@ -19,6 +22,8 @@ app.use(morgan(function (tokens, req, res) {
     JSON.stringify(req.body)
   ].join(' ')
 }))
+
+
 
 let data = [
     { 
@@ -43,6 +48,8 @@ let data = [
     }
 ]
 
+
+
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
   })
@@ -51,12 +58,12 @@ app.get('/api/persons', (request, response) => {
     response.json(data)
 })
 
-app.get('/info', (request, response) => {
+app.get('/api/persons/info', (request, response) => {
     response.send(`<div><br/><p>Phonebook has info for ${data.length} people</p>
                     <p>${new Date().toString()}</p></div>`)
 })
 
-app.get('/api/person/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
 
   person = data.find(person => person.id === id)
@@ -69,7 +76,7 @@ app.get('/api/person/:id', (request, response) => {
   }
 })
 
-app.delete('/api/person/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
 
   data = data.filter(person => person.id !== id)
