@@ -28,24 +28,43 @@ const App = () => {
     const isNameDuplicated = Object.values(persons).find(
       (person) => person.name.toLowerCase() === newName.toLowerCase())
     
+    console.log(isNameDuplicated)
+    
     if (isNameDuplicated && isNameDuplicated.number === newNumber) {
       window.alert(`${newName} is already added to phonebook`)
       setNewName('')
       setNewNumber('')
       return
-    } 
+    }
+    const personObj = {
+      name: newName,
+      id: isNameDuplicated === undefined ? "": isNameDuplicated.id,
+      number: newNumber
+    }
+    console.log(personObj)
+    if (isNameDuplicated) {
+
+      ContactService
+      .updateContact(personObj.id, personObj)
+      .then(
+        () => {
+          ContactService.getAllContacts().then((response) => {
+            setPersons(response);
+          });
+        }
+      )
+      setNewName('')
+      setNewNumber('')
+    }
 
     else {
-      const personObj = {
-        name: newName,
-        id: "",
-        number: newNumber
-      }
 
       ContactService
       .createNewContact(personObj)
-      .then(response => {
-        setPersons(persons.concat(response.data))
+      .then(() => {
+        ContactService.getAllContacts().then((response) => {
+          setPersons(response);
+        });
       })
       setNewName('')
       setNewNumber('')
